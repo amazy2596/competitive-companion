@@ -17,16 +17,16 @@ export class NowCoderProblemParser extends Parser {
     const task = new TaskBuilder('NowCoder').setUrl(url);
 
     if (url.includes('/acm/')) {
-      this.parseACM(elem, task);
+      this.parseACM(elem, url, task);
     } else {
-      this.parsePAT(elem, task);
+      this.parsePAT(elem, url, task);
     }
 
     return task.build();
   }
 
-  private parseACM(elem: Element, task: TaskBuilder): void {
-    task.setName(elem.querySelector('.terminal-topic-title').textContent.trim());
+  private parseACM(elem: Element, url: string, task: TaskBuilder): void {
+    task.setName(elem.querySelector('.terminal-topic-title').textContent.trim(), this.extractProblemId(url));
 
     const timeLimitStr = elem.querySelector('.question-intr > .subject-item-wrap > span').textContent.split('，').pop();
     task.setTimeLimit(parseInt(/(\d+)/.exec(timeLimitStr)[1], 10) * 1000);
@@ -43,8 +43,8 @@ export class NowCoderProblemParser extends Parser {
     });
   }
 
-  private parsePAT(elem: Element, task: TaskBuilder): void {
-    task.setName(elem.querySelector('.pat-content h3').textContent.trim().split(' (')[0]);
+  private parsePAT(elem: Element, url: string, task: TaskBuilder): void {
+    task.setName(this.extractProblemId(url) ,elem.querySelector('.pat-content h3').textContent.trim().split(' (')[0]);
 
     const limitsStr = elem.querySelector('.pat-content .pat-detail-info').textContent;
     task.setTimeLimit(parseInt(/(\d+) ms/.exec(limitsStr)[1]));
@@ -57,5 +57,21 @@ export class NowCoderProblemParser extends Parser {
     for (let i = 0; i < blocks.length - 1; i += 2) {
       task.addTest(blocks[i].innerHTML, blocks[i + 1].innerHTML);
     }
+  }
+
+  private extractProblemId(url: string): string {
+    // 匹配比赛题目格式：/contest/99458/A
+    const contestMatch = url.match(/\/contest\/(\d+)\/([A-Z])/);
+    if (contestMatch) {
+      return `${contestMatch[1]}-${contestMatch[2]}`; // 返回格式：99458-A
+    }
+    
+    // 匹配其他题目格式
+    const problemMatch = url.match(/problem\/(\d+)/);
+    if (problemMatch) {
+      return problemMatch[1];
+    }
+    
+    return 'Unknown Id';
   }
 }

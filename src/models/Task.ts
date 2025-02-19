@@ -19,7 +19,7 @@ export class Task implements Sendable {
 
     const obj = JSON.parse(data);
 
-    task.setName(obj.name);
+    task.setName(obj.name, obj.title);
     task.setGroup(obj.group);
 
     task.setUrl(obj.url);
@@ -44,6 +44,7 @@ export class Task implements Sendable {
 
   public constructor(
     public name: string,
+    public title: string,
     public group: string,
     public url: string,
     public interactive: boolean,

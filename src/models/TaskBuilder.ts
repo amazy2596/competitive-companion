@@ -11,6 +11,7 @@ const cyrillicToLatin = cyrillicToTranslit();
 
 export class TaskBuilder {
   public name: string = '';
+  public title: string = '';
 
   public judge: string = '';
   public category: string = '';
@@ -45,8 +46,9 @@ export class TaskBuilder {
     this.updateGroupFromJudgeCategory();
   }
 
-  public setName(name: string): TaskBuilder {
+  public setName(name: string, title: string): TaskBuilder {
     this.name = name;
+    this.title = title;
     return this.updateJavaTaskClassFromName();
   }
 
@@ -155,6 +157,7 @@ export class TaskBuilder {
   public build(): Task {
     return new Task(
       this.name,
+      this.title,
       this.group,
       this.url,
       this.interactive,

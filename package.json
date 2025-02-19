@@ -39,6 +39,7 @@
     "jszip": "3.10.1",
     "nanobar": "0.4.2",
     "p-limit": "6.2.0",
+    "package.json": "^2.0.1",
     "pdfjs-dist": "4.2.67",
     "snarkdown": "2.0.0"
   },
@@ -63,7 +64,8 @@
     "puppeteer": "^24.2.0",
     "rimraf": "^6.0.1",
     "ts-jest": "^29.2.5",
-    "tsx": "^4.19.2",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.19.3",
     "typescript": "^5.7.3",
     "typescript-eslint": "^8.24.0",
     "web-ext": "^8.4.0"

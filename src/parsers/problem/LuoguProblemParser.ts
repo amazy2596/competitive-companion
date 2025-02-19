@@ -22,7 +22,11 @@ export class LuoguProblemParser extends Parser {
   }
 
   private parseFromPage(task: TaskBuilder, elem: Element): void {
-    task.setName(elem.querySelector('h1').textContent.trim());
+    const text = elem.querySelector('h1').textContent.trim();
+    // P3379 【模板】最近公共祖先（LCA）
+    const id = text.match(/P(\d+)/)[0];
+    const title = text.match(/P\d+\s+(.*)/)[1];
+    task.setName(title, id);
 
     const timeLimitStr = elem.querySelector('.stat > .field:nth-child(3) > .value').textContent;
     task.setTimeLimit(parseFloat(timeLimitStr) * 1000);
@@ -40,7 +44,7 @@ export class LuoguProblemParser extends Parser {
     const script = elem.querySelector('#lentille-context').textContent;
     const data = JSON.parse(script).data.problem;
 
-    task.setName(`${data.pid} ${data.title}`.trim());
+    task.setName(data.pid, data.title);
 
     task.setTimeLimit(Math.max(...data.limits.time));
     task.setMemoryLimit(Math.max(...data.limits.memory) / 1024);
