@@ -55,7 +55,7 @@ export class CodeforcesProblemParser extends Parser {
   private parseMainProblem(html: string, url: string, task: TaskBuilder): void {
     const elem = htmlToElement(html);
 
-    task.setName(elem.querySelector('.problem-statement > .header > .title').textContent.trim());
+    task.setName(elem.querySelector('.problem-statement > .header > .title').textContent.trim(), elem.querySelector('.problem-statement > .header > .title').textContent.trim());
 
     if (url.includes('/edu/')) {
       const breadcrumbs = [...elem.querySelectorAll('.eduBreadcrumb > a')].map(el => el.textContent.trim());
@@ -124,7 +124,7 @@ export class CodeforcesProblemParser extends Parser {
   private parseAcmSguRuProblemInsideTable(html: string, task: TaskBuilder): void {
     const elem = htmlToElement(html);
 
-    task.setName(elem.querySelector('.problemindexholder h3').textContent.trim());
+    task.setName(elem.querySelector('.problemindexholder h3').textContent.trim(), elem.querySelector('.problemindexholder h3').textContent.trim());
     task.setCategory('acm.sgu.ru archive');
 
     task.setTimeLimit(parseFloat(/time limit per test: ([0-9.]+)\s+sec/.exec(html)[1]) * 1000);
@@ -139,7 +139,7 @@ export class CodeforcesProblemParser extends Parser {
   private parseAcmSguRuProblemNotInsideTable(html: string, task: TaskBuilder): void {
     const elem = htmlToElement(html);
 
-    task.setName(elem.querySelector('.problemindexholder h4').textContent.trim());
+    task.setName(elem.querySelector('.problemindexholder h4').textContent.trim(), elem.querySelector('.problemindexholder h4').textContent.trim());
     task.setCategory('acm.sgu.ru archive');
 
     task.setTimeLimit(parseFloat(/Time\s+limit per test: ([0-9.]+)\s+sec/i.exec(html)[1]) * 1000);
@@ -184,7 +184,7 @@ export class CodeforcesProblemParser extends Parser {
     const letter = columns[0].querySelector('a').text.trim();
     const name = columns[1].querySelector('a').text.trim();
 
-    task.setName(`${letter}. ${name}`);
+    task.setName(`${letter}. ${name}`, `${letter}. ${name}`);
 
     const detailsStr = columns[1].querySelector('div > div:not(:first-child)').textContent;
     const detailsMatches = /([^/]+)\/([^\n]+)\s+(\d+) s,\s+(\d+) MB/.exec(detailsStr.replace('\n', ' '));
