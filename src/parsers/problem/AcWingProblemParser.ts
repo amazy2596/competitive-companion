@@ -12,7 +12,11 @@ export class AcWingProblemParser extends Parser {
     const elem = htmlToElement(html);
     const task = new TaskBuilder('AcWing').setUrl(url);
 
-    task.setName(elem.querySelector('.problem-content-title').textContent.trim().split('. ').pop());
+    const s = elem.querySelector('.problem-content-title').textContent.trim();
+    const name = s.split('. ')[1];
+    const FileName = s.split('. ')[0];
+
+    task.setName(name, FileName);
 
     let hasSeenSampleHeader = false;
     const blocks: Element[] = [];
