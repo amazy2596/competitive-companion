@@ -26,7 +26,7 @@ export class NowCoderProblemParser extends Parser {
   }
 
   private parseACM(elem: Element, url: string, task: TaskBuilder): void {
-    task.setName(elem.querySelector('.terminal-topic-title').textContent.trim(), this.extractProblemId(url));
+    task.setName(elem.querySelector('.question-title').textContent.trim(), this.extractProblemId(url));
 
     const timeLimitStr = elem.querySelector('.question-intr > .subject-item-wrap > span').textContent.split('，').pop();
     task.setTimeLimit(parseInt(/(\d+)/.exec(timeLimitStr)[1], 10) * 1000);

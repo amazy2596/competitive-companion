@@ -12,58 +12,52 @@ export class AtCoderProblemParser extends Parser {
     const elem = htmlToElement(html);
     const task = new TaskBuilder('AtCoder').setUrl(url);
 
-    const name = [...elem.querySelector('h2, .h2').childNodes]
+    const name = [...elem.querySelector('.h2').childNodes]
       .filter(node => node.nodeType === Node.TEXT_NODE)
       .map(node => node.textContent)
       .join('')
       .trim();
 
     task.setName(name, name);
-    task.setCategory(elem.querySelector('.contest-name, .contest-title').textContent);
+    task.setCategory(elem.querySelector('.contest-title').textContent);
 
     const interactiveSentences = ['This is an interactive task', 'This is a reactive problem'];
     task.setInteractive(interactiveSentences.some(x => html.includes(x)));
 
-    const limitNodes = elem.querySelector('#task-statement').previousElementSibling;
+    const limitText = elem.querySelector('#task-statement').previousElementSibling.textContent;
 
-    const timeLimitStr = limitNodes.textContent;
-    task.setTimeLimit(parseFloat(/([0-9.]+) ?sec/.exec(timeLimitStr)[1]) * 1000);
+    task.setTimeLimit(parseFloat(/Time Limit: ([0-9.]+) ?sec/.exec(limitText)[1]) * 1000);
+    task.setMemoryLimit(parseInt(/Memory Limit: (\d+) ?M[iI]?B/.exec(limitText)[1], 10));
 
-    const memoryLimitStr = limitNodes.textContent;
-    task.setMemoryLimit(parseInt(/(\d+) ?MB/.exec(memoryLimitStr)[1], 10));
+    const getNextPre = (el: Element): Element | null => {
+      let current = el.nextElementSibling;
+      while (current && current.tagName !== 'PRE') {
+        current = current.nextElementSibling;
+      }
+      return current;
+    };
 
     const inputs = [...elem.querySelectorAll('h3')]
-      .filter(el => el.textContent.includes('入力例'))
-      .map(el => el.nextElementSibling)
-      .map(el => {
-        if (el.tagName === 'PRE') {
-          return el;
-        } else if (el.tagName === 'DIV') {
-          return el.nextElementSibling;
-        } else if (el.children.length >= 3) {
-          return el.children[2];
-        } else {
-          return el.children[0];
-        }
-      });
+      .filter(el => el.textContent.includes('Sample Input') || el.textContent.includes('入力例'))
+      .map(getNextPre)
+      .filter(el => el !== null);
 
     const outputs = [...elem.querySelectorAll('h3')]
-      .filter(el => el.textContent.includes('出力例'))
-      .map(el => el.nextElementSibling)
-      .map(el => {
-        if (el.tagName === 'PRE') {
-          return el;
-        } else if (el.tagName === 'DIV') {
-          return el.nextElementSibling;
-        } else if (el.children.length >= 3) {
-          return el.children[2];
-        } else {
-          return el.children[0];
-        }
-      });
+      .filter(el => el.textContent.includes('Sample Output') || el.textContent.includes('出力例'))
+      .map(getNextPre)
+      .filter(el => el !== null);
 
+    const addedTests = new Set<string>();
     for (let i = 0; i < inputs.length && i < outputs.length; i++) {
-      task.addTest(inputs[i].textContent, outputs[i].textContent);
+      const inputContent = inputs[i].textContent;
+      const outputContent = outputs[i].textContent;
+      
+      const testKey = JSON.stringify({ input: inputContent, output: outputContent });
+
+      if (!addedTests.has(testKey)) {
+        task.addTest(inputContent, outputContent);
+        addedTests.add(testKey);
+      }
     }
 
     return task.build();
